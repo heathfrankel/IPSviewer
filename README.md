@@ -52,7 +52,7 @@ You can preview the production build with `npm run preview`.
 
 ## Who Supports?
 
-Maintenance of this repository is provided by John D'Amore, MS (github: jddamore). The hosting of the [online version](https://www.ipsviewer.com) is provided by More Informatics, Inc.
+Maintenance of this repository is provided by John D'Amore, MS (github: jddamore). The hosting of the [online version](https://www.ipsviewer.com) is provided by the [Progress for Informatics and Energy Foundation, Inc](https://betterpie.org).
 
 This viewer is based on previous work from IPS-Argentina (https://github.com/SALUD-AR/IPS-Argentina). Credit to Alejandro Lopez Osornio, Diego Kaminker and Fernando Campos for their prior work. Thanks to Rob Hausam and Giorgio Cangioli for providing the first samples testing the viewer. Thanks to Daniel Lorigan for multiple contributions!
 
