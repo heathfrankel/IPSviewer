@@ -230,12 +230,9 @@
 {/if}
 {#if mode === 'text' && typeof compositionTextDiv === 'string' && compositionTextDiv.trim() !== ''}
   <Row class="mx-0">
-    <Accordion class="mt-3">
-      <AccordionItem active class="ips-section">
-        <h6 slot="header" class="my-2">Composition</h6>
-        {@html compositionTextDiv}
-      </AccordionItem>
-    </Accordion>
+    <div style="margin: 1.5em 0 1em 0;">
+      {@html compositionTextDiv}
+    </div>
   </Row>
 {/if}
 {#each Object.entries(ipsContent) as [title, sectionContent]}
