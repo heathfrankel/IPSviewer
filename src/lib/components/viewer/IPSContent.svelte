@@ -216,24 +216,118 @@
 <!-- Render Patient narrative first, then Composition, then sections -->
 {#if ipsContent.Patient}
   <Row class="mx-0">
-    <Accordion class="mt-3">
-      <AccordionItem active class="ips-section">
-        <h6 slot="header" class="my-2">Patient</h6>
+    <Card class="mb-3" style="border-radius: 0.5em; border: 1px solid #e0e0e0; margin-top: 2em;">
+      <CardBody>
         {#if mode === 'text' && ipsContent.Patient.entries && typeof ipsContent.Patient.entries[0]?.text?.div === 'string' && ipsContent.Patient.entries[0].text.div.trim() !== ''}
           {@html ipsContent.Patient.entries[0].text.div}
         {:else}
           <span class="text-muted">No patient narrative available.</span>
         {/if}
-      </AccordionItem>
-    </Accordion>
+      </CardBody>
+    </Card>
   </Row>
 {/if}
 {#if mode === 'text' && typeof compositionTextDiv === 'string' && compositionTextDiv.trim() !== ''}
   <Row class="mx-0">
-    <div style="margin: 1.5em 0 1em 0;">
-      {@html compositionTextDiv}
-    </div>
+    <Card class="mb-3" style="border-radius: 0.5em; border: 1px solid #e0e0e0;">
+      <CardBody>
+        {@html compositionTextDiv}
+        {#each Object.entries(ipsContent) as [title, sectionContent]}
+          {#if title !== 'Patient'}
+            <Row class="mx-0">
+              <!--wrap in accordion with title-->
+              <Accordion class="mt-3">
+                <AccordionItem active class="ips-section">
+                  <h6 slot="header" class="my-2">{title}</h6>
+                  {#if sectionContent.useText || mode === "text"}
+                    {@html sectionContent.section.text?.div}
+                  {:else}
+                    <Card style="width: 100%; max-width: 100%" class="mb-2">
+                        {#each sectionContent.entries as resource, index}
+                          <CardBody class={index > 0 ? "border-top" : ""}>
+                            <Row style="overflow:hidden" class="d-flex justify-content-end align-content-center">
+                              <Col class="flex-grow-1" style="overflow:hidden">
+                                {#if mode === "app" && resource.resourceType in components}
+                                  <svelte:component
+                                    this={components[resource.resourceType]}
+                                    content={{resource: resource, entries: bundle.entry}}
+                                  />
+                                {:else}
+                                  {#if mode === "app"}
+                                    {showInfoMessage(`Unsupported sections displayed using composition narratives`)};
+                                  {/if}
+                                {/if}
+                              </Col>
+                              <Col class="d-flex flex-row-reverse justify-content-end align-items-start" style="max-width: max-content">
+                                <Button
+                                    size="sm"
+                                    color="secondary"
+                                    outline
+                                    on:click={() => setJson(resource)}
+                                >
+                                  View
+                                </Button>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        {/each}
+                      </Card>
+                    {/if}
+                </AccordionItem>
+              </Accordion>
+            </Row>
+          {/if}
+        {/each}
+      </CardBody>
+    </Card>
   </Row>
+{:else}
+  {#each Object.entries(ipsContent) as [title, sectionContent]}
+    {#if title !== 'Patient'}
+      <Row class="mx-0">
+        <!--wrap in accordion with title-->
+        <Accordion class="mt-3">
+          <AccordionItem active class="ips-section">
+            <h6 slot="header" class="my-2">{title}</h6>
+            {#if sectionContent.useText || mode === "text"}
+              {@html sectionContent.section.text?.div}
+            {:else}
+              <Card style="width: 100%; max-width: 100%" class="mb-2">
+                  {#each sectionContent.entries as resource, index}
+                    <CardBody class={index > 0 ? "border-top" : ""}>
+                      <Row style="overflow:hidden" class="d-flex justify-content-end align-content-center">
+                        <Col class="flex-grow-1" style="overflow:hidden">
+                          {#if mode === "app" && resource.resourceType in components}
+                            <svelte:component
+                              this={components[resource.resourceType]}
+                              content={{resource: resource, entries: bundle.entry}}
+                            />
+                          {:else}
+                            {#if mode === "app"}
+                              {showInfoMessage(`Unsupported sections displayed using composition narratives`)};
+                            {/if}
+                          {/if}
+                        </Col>
+                        <Col class="d-flex flex-row-reverse justify-content-end align-items-start" style="max-width: max-content">
+                          <Button
+                              size="sm"
+                              color="secondary"
+                              outline
+                              on:click={() => setJson(resource)}
+                          >
+                            View
+                          </Button>
+                        </Col>
+                      </Row>
+                    </CardBody>
+                  {/each}
+                </Card>
+              {/if}
+          </AccordionItem>
+        </Accordion>
+      </Row>
+    {/if}
+  {/each}
 {/if}
 {#each Object.entries(ipsContent) as [title, sectionContent]}
   {#if title !== 'Patient'}
