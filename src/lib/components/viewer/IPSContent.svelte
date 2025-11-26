@@ -215,17 +215,51 @@
 {/if}
 <!-- Render Patient narrative first, then Composition, then sections -->
 {#if ipsContent.Patient}
-  <Row class="mx-0">
-    <Card class="mb-3" style="border-radius: 0.5em; border: 1px solid #e0e0e0; margin-top: 2em;">
-      <CardBody>
-        {#if mode === 'text' && ipsContent.Patient.entries && typeof ipsContent.Patient.entries[0]?.text?.div === 'string' && ipsContent.Patient.entries[0].text.div.trim() !== ''}
-          {@html ipsContent.Patient.entries[0].text.div}
-        {:else}
-          <span class="text-muted">No patient narrative available.</span>
-        {/if}
-      </CardBody>
-    </Card>
-  </Row>
+  {#if mode === 'text'}
+    <Row class="mx-0">
+      <Card class="mb-3" style="border-radius: 0.5em; border: 1px solid #e0e0e0; margin-top: 2em;">
+        <CardBody>
+          {#if ipsContent.Patient.entries && typeof ipsContent.Patient.entries[0]?.text?.div === 'string' && ipsContent.Patient.entries[0].text.div.trim() !== ''}
+            {@html ipsContent.Patient.entries[0].text.div}
+          {:else}
+            <span class="text-muted">No patient narrative available.</span>
+          {/if}
+        </CardBody>
+      </Card>
+    </Row>
+  {:else}
+    <Row class="mx-0">
+      <Accordion class="mt-3">
+        <AccordionItem active class="ips-section">
+          <h6 slot="header" class="my-2">Patient</h6>
+          <Card style="width: 100%; max-width: 100%" class="mb-2">
+            {#each ipsContent.Patient.entries as resource, index}
+              <CardBody class={index > 0 ? "border-top" : ""}>
+                <Row style="overflow:hidden" class="d-flex justify-content-end align-content-center">
+                  <Col class="flex-grow-1" style="overflow:hidden">
+                    <svelte:component
+                      this={components['Patient']}
+                      content={{resource: resource, entries: bundle.entry}}
+                    />
+                  </Col>
+                  <Col class="d-flex flex-row-reverse justify-content-end align-items-start" style="max-width: max-content">
+                    <Button
+                        size="sm"
+                        color="secondary"
+                        outline
+                        on:click={() => setJson(resource)}
+                    >
+                      View
+                    </Button>
+                  </Col>
+                </Row>
+              </CardBody>
+            {/each}
+          </Card>
+        </AccordionItem>
+      </Accordion>
+    </Row>
+  {/if}
 {/if}
 {#if mode === 'text' && typeof compositionTextDiv === 'string' && compositionTextDiv.trim() !== ''}
   <Row class="mx-0">
@@ -289,7 +323,7 @@
         <Accordion class="mt-3">
           <AccordionItem active class="ips-section">
             <h6 slot="header" class="my-2">{title}</h6>
-            {#if sectionContent.useText || mode === "text"}
+            {#if sectionContent.useText}
               {@html sectionContent.section.text?.div}
             {:else}
               <Card style="width: 100%; max-width: 100%" class="mb-2">
@@ -297,15 +331,13 @@
                     <CardBody class={index > 0 ? "border-top" : ""}>
                       <Row style="overflow:hidden" class="d-flex justify-content-end align-content-center">
                         <Col class="flex-grow-1" style="overflow:hidden">
-                          {#if mode === "app" && resource.resourceType in components}
+                          {#if resource.resourceType in components}
                             <svelte:component
                               this={components[resource.resourceType]}
                               content={{resource: resource, entries: bundle.entry}}
                             />
                           {:else}
-                            {#if mode === "app"}
-                              {showInfoMessage(`Unsupported sections displayed using composition narratives`)};
-                            {/if}
+                            {showInfoMessage(`Unsupported sections displayed using composition narratives`)};
                           {/if}
                         </Col>
                         <Col class="d-flex flex-row-reverse justify-content-end align-items-start" style="max-width: max-content">
