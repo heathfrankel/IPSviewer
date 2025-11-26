@@ -215,7 +215,15 @@
     <AccordionItem active class="ips-section">
       <h6 slot="header" class="my-2">{title}</h6>
       {#if sectionContent.useText || mode === "text"}
-        {@html sectionContent.section.text?.div}
+        {#if title === 'Patient'}
+          {#if sectionContent.entries && typeof sectionContent.entries[0]?.text?.div === 'string' && sectionContent.entries[0].text.div.trim() !== ''}
+            {@html sectionContent.entries[0].text.div}
+          {:else}
+            <span class="text-muted">No patient narrative available.</span>
+          {/if}
+        {:else}
+          {@html sectionContent.section.text?.div}
+        {/if}
       {:else}
         <Card style="width: 100%; max-width: 100%" class="mb-2">
             {#each sectionContent.entries as resource, index}
